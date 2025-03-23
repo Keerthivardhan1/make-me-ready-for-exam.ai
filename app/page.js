@@ -5,6 +5,7 @@ import UserStore from "./store/userStore";
 import Link from 'next/link';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from './pages/signup/handleErrors';
+import { Button } from '@/components/ui/button';
 
 
 export default function Home() {
@@ -71,11 +72,9 @@ const handleLogin = async (e) => {
 }
 
   return (
-    (user && user.email)?router.replace('/landing')
-    :
     <div className=' w-screen h-screen flex justify-around items-center'>
     <div className='container'>
-    <h1>Login</h1>
+    <h1 className='text-2xl font-extrabold '>Login</h1>
     <form onSubmit={handleLogin}>
         <div>
             <label htmlFor='email'>Email</label>
@@ -97,9 +96,9 @@ const handleLogin = async (e) => {
                 value={loginInfo.password}
             />
         </div>
-        <button type='submit'>Login</button>
+        <Button type='submit'>Login</Button>
         <span>Does't have an account ?
-            <Link href="/pages/signup">Signup</Link>
+            <Link href="/pages/signup" className='p-2 text-blue-600'>Signup</Link>
         </span>
     </form>
     <ToastContainer />

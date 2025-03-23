@@ -123,7 +123,8 @@ body {
   border-radius: 10px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 8px 8px 24px 0px rgba(66, 68, 90, 1);
+  /* box-shadow: 8px 8px 24px 0px rgba(66, 68, 90, 1); */
+  border: 2px solid black;
 
 }
 
@@ -141,6 +142,8 @@ body {
   flex-direction: column;
 }
 
+/* Remove this by adding Next Input component instad of html <input> tag*/
+
 .container input{
   width: 100%;
   font-size: 20px;
@@ -150,21 +153,6 @@ body {
   border-bottom: 1px solid black;
 }
 
-.container input::placeholder{
-  font-size: 12px;
-  font-style: italic;
-}
-
-button{
-  background-color: purple;
-  border: none;
-  font-size: 20px;
-  color: white;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
-  margin: 10px 0;
-}
 
 .nav{
   display: "flexbox";

@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from './handleErrors';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 function Signup() {
 
@@ -59,7 +60,7 @@ function Signup() {
     return (
         <div className=' w-screen h-screen flex justify-around items-center'>
         <div className='container'>
-            <h1>Signup</h1>
+            <h1 className='text-2xl font-extrabold '>Signup</h1>
             <form onSubmit={handleSignup}>
                 <div>
                     <label htmlFor='name'>Name</label>
@@ -92,9 +93,9 @@ function Signup() {
                         value={signupInfo.password}
                     />
                 </div>
-                <button type='submit'>Signup</button>
+                <Button type='submit'>Signup</Button>
                 <span>Already have an account ?
-                    <Link href="/">Login</Link>
+                    <Link href="/" className='p-2 text-blue-600'>Login</Link>
                 </span>
             </form>
             <ToastContainer />
