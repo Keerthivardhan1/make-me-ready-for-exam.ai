@@ -22,6 +22,19 @@ export default function Home() {
     password: ''
 })
 
+useEffect(()=>{
+    const localStorage_token = localStorage.getItem("token");
+    const localStorage_name = localStorage.getItem('name');
+    const localStorage_email = localStorage.getItem('email');
+
+    if(localStorage_email && localStorage_name && localStorage_token){
+        user.setUser({
+            email : localStorage_email,
+            token : localStorage_token
+        })
+    }
+},[])
+
 
 const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,7 +64,8 @@ const handleLogin = async (e) => {
         if (success) {
             handleSuccess(message);
             localStorage.setItem('token', jwtToken);
-            localStorage.setItem('loggedInUser', name);
+            localStorage.setItem('name', name);
+            localStorage.setItem('email' , email);
             user.setUser({
               email : loginInfo.email,
               token : jwtToken

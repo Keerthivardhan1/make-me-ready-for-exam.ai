@@ -3,6 +3,7 @@ import Link from "next/link"
 import UserStore from "../store/userStore"
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
   
 export default function page() {
 
@@ -14,11 +15,16 @@ export default function page() {
       router.replace('/');
     }
   },[user , router])
+
+  const handleLogout = ()=>{
+    user.logout();
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
+  }
   
   return (
     <>
     <div>
-
     <div className=' mt-10 m-20 flex justify-center items-center h-[85vh] border-black rounded-md'>
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-wide lg:text-9xl">
       Your <span className=" ">Mentor</span> <br></br> And <br></br> <span className=" text-orange-500">Study Companian</span> <br></br> is <span className="">Hear</span> . . . 
@@ -31,6 +37,10 @@ export default function page() {
     <li>
       <Link href={"/r4"}>RoadMap</Link>
     </li>
+    <li>
+    <Button  onClick={handleLogout} >Logout</Button>
+    </li>
+
   </ul>
 
   <div className="h-[90vh] bg-zinc-100 flex flex-col items-center justify-center m-3 rounded-2xl">

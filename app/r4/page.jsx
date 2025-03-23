@@ -43,22 +43,52 @@ export default function page() {
   const [isLoading, setIsLoading] = useState(true);
   const [clicked, setclicked] = useState(false);
 
-  const [completed , setcompleted] = useState(0)
+  const [completed, setcompleted] = useState(0);
 
   const user = UserStore();
   const router = useRouter();
 
-  useEffect(()=>{
-    if(!user || !user.token || !user.email ){
-      router.replace('/');
+  useEffect(() => {
+    if (!user || !user.token || !user.email) {
+      router.replace("/");
     }
-  },[user , router])
-  
+  }, [user, router]);
 
-  useEffect(()=>{
-    const comp = JSON.parse(localStorage.getItem("completed"))
-    if(comp ){
-      setcompleted(comp)
+  useEffect(() => {
+    const run = async () => {
+      if(!user.email) return ;
+     try {
+      const email = user.email;
+      const response = await axios.post(
+        "http://localhost:8000/getStoredRoadMap",
+        {
+          email: email,
+        }
+      );
+
+      console.log("res st r :" , response)
+
+      const data = await response.data.roadmap.data; // Parse the JSON response
+
+      const examname = await response.data.roadmap.exam
+
+      user.setExam(examname);
+
+      console.log( " data ::: " ,data)
+
+      setRoadmap(data); // Set the roadmap state with the response data
+      console.log(roadmap);
+     } catch (error) {
+      console.log("erre" , error)
+     }
+    };
+    run();
+  }, [ ]);
+
+  useEffect(() => {
+    const comp = JSON.parse(localStorage.getItem("completed"));
+    if (comp) {
+      setcompleted(comp);
     }
     // const localRoadMap = JSON.parse(localStorage.getItem("roadmap"));
     // if (localRoadMap ) {
@@ -67,14 +97,14 @@ export default function page() {
 
     //   return;
     // }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (completed !== null) {
       localStorage.setItem("completed", JSON.stringify(completed));
     }
   }, [completed]); // Runs only when `completed` changes
-  
+
   const updateComppleteStatus = (val) => {
     setcompleted(val); // Only update state
   };
@@ -90,11 +120,15 @@ export default function page() {
     // Set loading state or indicate user clicked
     setclicked(true);
 
+    setRoadmap({})
+    user.setExam(exam);
+
     // Generate the prompt with template literals
     const prompt = `
       Generate a roadmap for the following syllabus and exam date and details.
       exam Name: ${exam}
       Syllabus: ${syllabus},
+      Current Date : ${new Date().toISOString().split("T")[0]},
       Exam Date: ${date},
       I like: ${preference},
       Provide the detailed roadmap covering each and every topic in JSON format for each week and each day, with tasks for each day having a corresponding checkbox, and show the completion percentage for each day, week, and overall plan.
@@ -162,15 +196,17 @@ export default function page() {
       //   },
       //   body: JSON.stringify({ prompt }), // Send prompt in JSON format
       // });
-      const localRoadMap = JSON.parse(localStorage.getItem("roadmap"));
-      if (localRoadMap ) {
-        setRoadmap(localRoadMap);
-        console.log("roadmap = ", localRoadMap);
+      // const localRoadMap = JSON.parse(localStorage.getItem("roadmap"));
+      // if (localRoadMap) {
+      //   setRoadmap(localRoadMap);
+      //   console.log("roadmap = ", localRoadMap);
 
-        return;
-      }
+      //   return;
+      // }
       const response = await axios.post("http://localhost:8000/getData", {
         prompt,
+        email: user.email,
+        exam,
       });
 
       // if (!response.ok) {
@@ -185,6 +221,7 @@ export default function page() {
       localStorage.setItem("roadmap", JSON.stringify(data));
       setIsLoading(false);
       setInputErrors({});
+      
       console.log("data from api = ", data); // Log the response
     } catch (error) {
       console.log("error = ", error); // Log the error
@@ -222,15 +259,13 @@ export default function page() {
     setInputErrors(errors);
 
     console.log("inputErrors : ", inputErrors);
-    
 
     // Return a boolean indicating if the form is valid
     return Object.keys(errors).length === 0;
   };
 
-  const updateRoadMap = (newRoadmap ) => {
+  const updateRoadMap = (newRoadmap) => {
     setRoadmap(newRoadmap);
-
   };
 
   const clearLocalRoadMap = () => {
@@ -238,13 +273,11 @@ export default function page() {
     localStorage.removeItem("completed");
   };
 
-  
-
   return (
     <div className="flex m-10 flex-col items-center">
       <div className="flex gap-4">
-      <div className="flex  flex-col items-center">
-        {/* <div className="m-10 "> */}
+        <div className="flex  flex-col items-center">
+          {/* <div className="m-10 "> */}
           <Card className="w-[50vw]">
             <CardHeader>
               <CardTitle>Create RoadMap</CardTitle>
@@ -325,19 +358,32 @@ export default function page() {
               Clear RoadMap
             </button>
           </div>
-        {/* </div> */}
-      </div>
-      <ProgressChart comp={completed}/>
+          {/* </div> */}
+        </div>
+        <ProgressChart comp={completed} />
       </div>
 
-      {clicked &&
+
+
+      {
         (isLoading ? (
           <Load />
         ) : error ? (
           <p className="text-red-600">{error}</p>
         ) : (
-          <RoadMap roadmap={roadmap} updateRoadMap={updateRoadMap} updateComppleteStatus={updateComppleteStatus} />
-        )) && (roadmap && <RoadMap roadmap={roadmap} updateRoadMap={updateRoadMap} updateComppleteStatus={updateComppleteStatus} /> ) }
+          <RoadMap
+            roadmap={roadmap}
+            updateRoadMap={updateRoadMap}
+            updateComppleteStatus={updateComppleteStatus}
+          />
+        )) &&
+        roadmap && (
+          <RoadMap
+            roadmap={roadmap}
+            updateRoadMap={updateRoadMap}
+            updateComppleteStatus={updateComppleteStatus}
+          />
+        )}
     </div>
   );
 }

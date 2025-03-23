@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import TaskProgress from "../components/TaskProgress";
+import UserStore from "../store/userStore";
 
 
 export default function RoadMap({roadmap , updateRoadMap , updateComppleteStatus}) {
@@ -19,6 +20,8 @@ export default function RoadMap({roadmap , updateRoadMap , updateComppleteStatus
   // useEffect(()=>{
 
   // }, [])
+  const user = UserStore();
+
 
   useEffect(() => {
     if (roadmap && roadmap.weeks) {
@@ -80,7 +83,7 @@ export default function RoadMap({roadmap , updateRoadMap , updateComppleteStatus
   
   return (
     <div className="m-10 w-[80vw]" >
-      <h1>RoadMap</h1>
+      <h1 className="p-2 text-xl font-extrabold">{user.exam } :  RoadMap</h1>
        <>
        {roadmap && roadmap.weeks ? (
          <Accordion type="single" collapsible className="w-full">
