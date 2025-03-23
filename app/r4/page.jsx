@@ -26,6 +26,9 @@ import {
 } from "@/components/ui/popover";
 import Load from "../components/Load";
 import RoadMap from "../components/RoadMap";
+import ProgressChart from "../components/ProgressChart";
+import UserStore from "../store/userStore";
+import { useRouter } from "next/navigation";
 
 export default function page() {
   const [date, setDate] = React.useState();
@@ -38,22 +41,57 @@ export default function page() {
   const [inputErrors, setInputErrors] = useState({});
 
   const [isLoading, setIsLoading] = useState(true);
-  const [clicked , setclicked] = useState(false);
+  const [clicked, setclicked] = useState(false);
 
+  const [completed , setcompleted] = useState(0)
+
+  const user = UserStore();
+  const router = useRouter();
+
+  useEffect(()=>{
+    if(!user || !user.token || !user.email ){
+      router.replace('/');
+    }
+  },[user , router])
+  
+
+  useEffect(()=>{
+    const comp = JSON.parse(localStorage.getItem("completed"))
+    if(comp ){
+      setcompleted(comp)
+    }
+    // const localRoadMap = JSON.parse(localStorage.getItem("roadmap"));
+    // if (localRoadMap ) {
+    //   setRoadmap(localRoadMap);
+    //   console.log("roadmap = ", localRoadMap);
+
+    //   return;
+    // }
+  }, [])
+
+  useEffect(() => {
+    if (completed !== null) {
+      localStorage.setItem("completed", JSON.stringify(completed));
+    }
+  }, [completed]); // Runs only when `completed` changes
+  
+  const updateComppleteStatus = (val) => {
+    setcompleted(val); // Only update state
+  };
   const genarateRoadMap = async (e) => {
     e.preventDefault();
     console.log("clicked");
     if (!validate()) {
-        return;
-      }
-    
-      setError("");
+      return;
+    }
 
-      // Set loading state or indicate user clicked
-      setclicked(true);
-    
-      // Generate the prompt with template literals
-      const prompt = `
+    setError("");
+
+    // Set loading state or indicate user clicked
+    setclicked(true);
+
+    // Generate the prompt with template literals
+    const prompt = `
       Generate a roadmap for the following syllabus and exam date and details.
       exam Name: ${exam}
       Syllabus: ${syllabus},
@@ -114,51 +152,46 @@ export default function page() {
       ]
     };
   `;
-    
-      try {
-        // Make the API request to get the data
-        // const response = await fetch("http://localhost:8000/getData", {
-        //   method: "POST", // Ensure you're sending a POST request
-        //   headers: {
-        //     "Content-Type": "application/json", // Tell the backend we're sending JSON data
-        //   },
-        //   body: JSON.stringify({ prompt }), // Send prompt in JSON format
-        // });
-        const localRoadMap =JSON.parse(localStorage.getItem("roadmap"));
-        if(localRoadMap){
-          setRoadmap(localRoadMap);
-          console.log("roadmap = " , localRoadMap);
-          
-          return;
-        }
-        const response = await axios.post("http://localhost:8000/getData", {
-          prompt,
-        });
-    
-        // if (!response.ok) {
-        //   thfrow new Error(`Error: ${response.statusText}`);
-        // }
 
+    try {
+      // Make the API request to get the data
+      // const response = await fetch("http://localhost:8000/getData", {
+      //   method: "POST", // Ensure you're sending a POST request
+      //   headers: {
+      //     "Content-Type": "application/json", // Tell the backend we're sending JSON data
+      //   },
+      //   body: JSON.stringify({ prompt }), // Send prompt in JSON format
+      // });
+      const localRoadMap = JSON.parse(localStorage.getItem("roadmap"));
+      if (localRoadMap ) {
+        setRoadmap(localRoadMap);
+        console.log("roadmap = ", localRoadMap);
 
-        console.log("res = ," , response );
-        
-
-    
-        const data = await response.data; // Parse the JSON response
-    
-        setRoadmap(data); // Set the roadmap state with the response data
-        localStorage.setItem("roadmap" , JSON.stringify(data));
-        setIsLoading(false)
-        setInputErrors({})
-        console.log("data from api = ", data); // Log the response
-      } catch (error) {
-        console.log("error = ", error); // Log the error
-        setIsLoading(false);
-        setError("Unable to fetch the data from backend: ", error.message); // Set error state
+        return;
       }
+      const response = await axios.post("http://localhost:8000/getData", {
+        prompt,
+      });
+
+      // if (!response.ok) {
+      //   thfrow new Error(`Error: ${response.statusText}`);
+      // }
+
+      console.log("res = ,", response);
+
+      const data = await response.data; // Parse the JSON response
+
+      setRoadmap(data); // Set the roadmap state with the response data
+      localStorage.setItem("roadmap", JSON.stringify(data));
+      setIsLoading(false);
+      setInputErrors({});
+      console.log("data from api = ", data); // Log the response
+    } catch (error) {
+      console.log("error = ", error); // Log the error
+      setIsLoading(false);
+      setError("Unable to fetch the data from backend: ", error.message); // Set error state
+    }
   };
-
-
 
   // useEffect(()=>setRoadmap(data) , []);
 
@@ -189,103 +222,122 @@ export default function page() {
     setInputErrors(errors);
 
     console.log("inputErrors : ", inputErrors);
+    
 
     // Return a boolean indicating if the form is valid
     return Object.keys(errors).length === 0;
   };
 
+  const updateRoadMap = (newRoadmap ) => {
+    setRoadmap(newRoadmap);
+
+  };
+
+  const clearLocalRoadMap = () => {
+    localStorage.removeItem("roadmap");
+    localStorage.removeItem("completed");
+  };
+
   
 
-  const updateRoadMap = (newRoadmap)=>{
-    setRoadmap(newRoadmap)
-  }
-
-  const clearLocalRoadMap = ()=>{
-    localStorage.removeItem("roadmap");
-  }
-
-
   return (
-    <div className="flex flex-col items-center">
-          <div className="m-10 ">
-        <Card className="w-[50vw]">
-          <CardHeader>
-            <CardTitle>Create project</CardTitle>
-            <CardDescription>
-              Deploy your new project in one-click.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="flex justify-start items-center gap-4">
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5 max-w-40">
-                  <Label htmlFor="name">Exam Name</Label>
-                  <Input id="name" 
-                  placeholder="Name of your Exam" 
-                  onChange = {(e)=>setExam(e.target.value)}
-                  />
-                  <p className="error">{inputErrors.exam}</p>
-                </div>
-                <div className="flex w-full gap-1.5"></div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[280px] justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      initialFocus
+    <div className="flex m-10 flex-col items-center">
+      <div className="flex gap-4">
+      <div className="flex  flex-col items-center">
+        {/* <div className="m-10 "> */}
+          <Card className="w-[50vw]">
+            <CardHeader>
+              <CardTitle>Create RoadMap</CardTitle>
+              <CardDescription>Your mentor is hear!</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="flex justify-start items-center gap-4">
+                <div className="grid w-full items-center gap-4">
+                  <div className="flex flex-col space-y-1.5 max-w-40">
+                    <Label htmlFor="name">Exam Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="Name of your Exam"
+                      onChange={(e) => setExam(e.target.value)}
                     />
-                  </PopoverContent>
-                </Popover>
-                <p className="error">{inputErrors.date}</p>
-              </div>
-              <div>
-                <div>
-                  <Label htmlFor="message">Syllabus</Label>
-                  <Textarea
-                    placeholder="Give your syllabus."
-                    id="syllabus"
-                    className="min-h-30 min-w-80 p-2 border rounded-md"
-                    onChange={(e)=>setSyllabus(e.target.value)}
-                  />
-                  <p className="error">{inputErrors.syllabus}</p>
+                    <p className="error">{inputErrors.exam}</p>
+                  </div>
+                  <div className="flex w-full gap-1.5"></div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[280px] justify-start text-left font-normal",
+                          !date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon />
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="error">{inputErrors.date}</p>
                 </div>
                 <div>
-                  <Label htmlFor="message">Any Porsanilazation</Label>
-                  <Textarea
-                    placeholder="I prefer to study hard concepts first.... "
-                    id="syllabus"
-                    onChange={(e)=>setPreference(e.target.value)}
-                  />
-                  <p className="error">{inputErrors.preference}</p>
+                  <div>
+                    <Label htmlFor="message">Syllabus</Label>
+                    <Textarea
+                      placeholder="Give your syllabus."
+                      id="syllabus"
+                      className="min-h-30 min-w-80 p-2 border rounded-md"
+                      onChange={(e) => setSyllabus(e.target.value)}
+                    />
+                    <p className="error">{inputErrors.syllabus}</p>
+                  </div>
+                  <div>
+                    <Label htmlFor="message">Any Porsanilazation</Label>
+                    <Textarea
+                      placeholder="I prefer to study hard concepts first.... "
+                      id="syllabus"
+                      onChange={(e) => setPreference(e.target.value)}
+                    />
+                    <p className="error">{inputErrors.preference}</p>
+                  </div>
                 </div>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-        <div className="flex items-center p-2 gap-4"> 
-        <button className="p-2 mt-2 bg-black rounded-md font-bold text-white" onClick={genarateRoadMap}>Genarate RoadMap</button>
-        <button className="p-2 mt-2 bg-black rounded-md font-bold text-white" onClick={clearLocalRoadMap}>Clear RoadMap</button>
-        </div>
+              </form>
+            </CardContent>
+          </Card>
+          <div className="flex items-center p-2 gap-4">
+            <button
+              className="p-2 mt-2 bg-black rounded-md font-bold text-white"
+              onClick={genarateRoadMap}
+            >
+              Genarate RoadMap
+            </button>
+            <button
+              className="p-2 mt-2 bg-black rounded-md font-bold text-white"
+              onClick={clearLocalRoadMap}
+            >
+              Clear RoadMap
+            </button>
+          </div>
+        {/* </div> */}
       </div>
-      {clicked && 
-      (isLoading ? <Load/> : ( error ? <p className="text-red-600" >{error}</p> : <RoadMap roadmap={roadmap} updateRoadMap={updateRoadMap}/>))
-      }
+      <ProgressChart comp={completed}/>
+      </div>
 
-      
+      {clicked &&
+        (isLoading ? (
+          <Load />
+        ) : error ? (
+          <p className="text-red-600">{error}</p>
+        ) : (
+          <RoadMap roadmap={roadmap} updateRoadMap={updateRoadMap} updateComppleteStatus={updateComppleteStatus} />
+        )) && (roadmap && <RoadMap roadmap={roadmap} updateRoadMap={updateRoadMap} updateComppleteStatus={updateComppleteStatus} /> ) }
     </div>
   );
 }
-

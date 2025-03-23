@@ -10,14 +10,27 @@ import {
 import TaskProgress from "../components/TaskProgress";
 
 
-export default function RoadMap({roadmap , updateRoadMap}) {
+export default function RoadMap({roadmap , updateRoadMap , updateComppleteStatus}) {
   // const [ isLoading , setIsLoading] = useState(true);
+
 
   // const [roadmap, setRoadmap] = useState({});
 
   // useEffect(()=>{
 
   // }, [])
+
+  useEffect(() => {
+    if (roadmap && roadmap.weeks) {
+      const totalTasks = roadmap.weeks.flatMap((week) =>
+        week.days.flatMap((day) => day.tasks)
+      );
+  
+      const val = calculateCompletionPercentage(totalTasks);
+      updateComppleteStatus(val); // ✅ Now updates after render
+    }
+  }, [roadmap]); // ✅ Runs after roadmap updates
+  
   
   const handleCheckboxChange = (weekIndex, dayIndex, taskIndex) => {
     const newRoadmap = {
@@ -49,14 +62,17 @@ export default function RoadMap({roadmap , updateRoadMap}) {
       }),
     };
 
-    updateRoadMap(newRoadmap); // Update the state with the modified roadmap
+    updateRoadMap(newRoadmap ); // Update the state with the modified roadmap
   };
 
   const calculateCompletionPercentage = (items) => {
     if (!items || items.length === 0) return 0; // Handle cases with no items
     const completedTasks = items.filter((item) => item.completed).length;
-    return Math.round((completedTasks / items.length) * 100);
+    const val =  Math.round((completedTasks / items.length) * 100);
+    return val;
   };
+
+
 
 
 

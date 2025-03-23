@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "email":"email dev"
+    "email": "email dev"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
@@ -20,17 +20,21 @@
     "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "axios": "^1.7.9",
+    "chart.js": "^4.4.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.469.0",
     "next": "15.1.2",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.5",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "^1.1.2"
+    "vaul": "^1.1.2",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

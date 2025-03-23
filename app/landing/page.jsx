@@ -1,6 +1,20 @@
+"use client"
 import Link from "next/link"
+import UserStore from "../store/userStore"
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
   
 export default function page() {
+
+  const user = UserStore();
+  const router = useRouter();
+
+  useEffect(()=>{
+    if(!user || !user.token || !user.email ){
+      router.replace('/');
+    }
+  },[user , router])
+  
   return (
     <>
     <div>
@@ -15,13 +29,22 @@ export default function page() {
     <li>Notes</li>
     <li>Doc</li>
     <li>
-      <Link href={"/r3"}>RoadMap</Link>
+      <Link href={"/r4"}>RoadMap</Link>
     </li>
   </ul>
 
-    <div className="h-[90vh] bg-black flex items-center justify-center m-3 rounded-2xl">
+  <div className="h-[90vh] bg-zinc-100 flex flex-col items-center justify-center m-3 rounded-2xl">
+</div>
+
+    <div className="h-[90vh] bg-black flex flex-col items-center justify-center m-3 rounded-2xl">
     <h4 className="scroll-m-20 text-xl text-orange-500 font-semibold tracking-tight ">
       @Keerthivardhan
+    </h4>
+    <h4 className="scroll-m-20 text-xl text-orange-500 font-semibold tracking-tight ">
+      @Himanshu
+    </h4>
+    <h4 className="scroll-m-20 text-xl text-orange-500 font-semibold tracking-tight ">
+      @Sumanth
     </h4>
     </div>
     </div>

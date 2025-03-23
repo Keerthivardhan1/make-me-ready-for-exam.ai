@@ -223,6 +223,7 @@ export default function page() {
           <p className='error'>{inputErrors.preference}</p>
           <button onClick={genarateRoadMap}>roadmap</button>
         </div>
+        
       </div>
       {clicked && 
       (isLoading ? <Load/> : <RoadMap roadmap={roadmap} updateRoadMap={updateRoadMap}/>)
@@ -232,80 +233,3 @@ export default function page() {
     </>
   );
 }
-
-/*
-
- <Card className="w-[50vw]">
-          <CardHeader>
-            <CardTitle>Create project</CardTitle>
-            <CardDescription>
-              Deploy your new project in one-click.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="flex justify-start items-center gap-4">
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5 max-w-40">
-                  <Label htmlFor="name">Exam Name</Label>
-                  <Input id="name" 
-                  placeholder="Name of your Exam" 
-                  onChange = {(e)=>setExam(e.target.value)}
-                  />
-                  <p className="error">{inputErrors.exam}</p>
-                </div>
-                <div className="flex w-full gap-1.5"></div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[280px] justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <p className="error">{inputErrors.date}</p>
-              </div>
-              <div>
-                <div>
-                  <Label htmlFor="message">Syllabus</Label>
-                  <Textarea
-                    placeholder="Give your syllabus."
-                    id="syllabus"
-                    className="min-h-30 min-w-80 p-2 border rounded-md"
-                    onChange={(e)=>setSyllabus(e.target.value)}
-                  />
-                  <p className="error">{inputErrors.syllabus}</p>
-                </div>
-                <div>
-                  <Label htmlFor="message">Any Porsanilazation</Label>
-                  <Textarea
-                    placeholder="I prefer to study hard concepts first.... "
-                    id="syllabus"
-                    onChange={(e)=>setPreference(e.target.value)}
-                  />
-                  <p className="error">{inputErrors.preference}</p>
-                </div>
-              </div>
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="outline">Cancel</Button>
-            <button onClick={()=>genarateRoadMap}> Genarate RoadMap</button>
-          </CardFooter>
-        </Card>
-
-
-*/
