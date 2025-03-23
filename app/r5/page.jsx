@@ -26,8 +26,10 @@ import {
 } from "@/components/ui/popover";
 import Load from "../components/Load";
 import RoadMap from "../components/RoadMap";
+import RoadMapStore from "../store/RoadMapStore";
 
 export default function page() {
+  
   const genarateRoadMap = async (e) => {
     e.preventDefault();
     console.log("clicked");
@@ -146,6 +148,8 @@ export default function page() {
   const [isLoading, setIsLoading] = useState(true);
   const [clicked , setclicked] = useState(false);
 
+  const roadMapStore = RoadMapStore();
+
   // useEffect(()=>setRoadmap(data) , []);
 
   const validate = () => {
@@ -182,8 +186,14 @@ export default function page() {
 
   
 
+  
+
   const updateRoadMap = (newRoadmap)=>{
     setRoadmap(newRoadmap)
+    console.log("org roadmap : "  , roadmap);
+    roadMapStore.setRoadmap(roadmap);
+    console.log("store roadmap " , roadMapStore.roadmap)
+
   }
 
 

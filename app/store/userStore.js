@@ -6,7 +6,7 @@ const UserStore = create((set) => ({
     exam : null,
     setUser: (newUser) => set((state) => ({ ...state, ...newUser })),
     setExam : (newExam) => set((state) => ({...state , exam:newExam})),
-    logout : ()=>set((state)=>({}))
+    logout : ()=>set(()=>({ email: null, token: null, exam: null}))
 }));
 
 export default UserStore;

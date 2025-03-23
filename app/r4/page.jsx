@@ -29,6 +29,7 @@ import RoadMap from "../components/RoadMap";
 import ProgressChart from "../components/ProgressChart";
 import UserStore from "../store/userStore";
 import { useRouter } from "next/navigation";
+import RoadMapStore from "../store/RoadMapStore";
 
 export default function page() {
   const [date, setDate] = React.useState();
@@ -48,17 +49,29 @@ export default function page() {
   const user = UserStore();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!user || !user.token || !user.email) {
-      router.replace("/");
-    }
-  }, [user, router]);
 
   useEffect(() => {
+      const localStorage_token = localStorage.getItem("token");
+      const localStorage_name = localStorage.getItem('name');
+      const localStorage_email = localStorage.getItem('email');
+
+      console.log("ls email  : " , localStorage_email)
+  
+      if(localStorage_email && localStorage_name && localStorage_token){
+          user.setUser({
+              email : localStorage_email,
+              token : localStorage_token
+          })
+      }
+    if ( !localStorage_token  ) {
+      router.replace("/");
+    }
+
+
     const run = async () => {
-      if(!user.email) return ;
+      if(!localStorage_email) return ;
      try {
-      const email = user.email;
+      const email = localStorage_email;
       const response = await axios.post(
         "http://localhost:8000/getStoredRoadMap",
         {
@@ -82,8 +95,8 @@ export default function page() {
       console.log("erre" , error)
      }
     };
-    run();
-  }, [ ]);
+    run()
+  }, []);
 
   useEffect(() => {
     const comp = JSON.parse(localStorage.getItem("completed"));
@@ -230,7 +243,6 @@ export default function page() {
     }
   };
 
-  // useEffect(()=>setRoadmap(data) , []);
 
   const validate = () => {
     let errors = {}; // Temporary object to collect errors
@@ -264,8 +276,14 @@ export default function page() {
     return Object.keys(errors).length === 0;
   };
 
+  const roadMapStore = RoadMapStore();
+
+
   const updateRoadMap = (newRoadmap) => {
-    setRoadmap(newRoadmap);
+    setRoadmap(newRoadmap)
+    console.log("org roadmap : "  , roadmap);
+    roadMapStore.setRoadMap({roadmap:newRoadmap});
+    console.log("store roadmap " , roadMapStore.roadmap)
   };
 
   const clearLocalRoadMap = () => {

@@ -9,19 +9,12 @@ import {
 } from "@/components/ui/accordion";
 import TaskProgress from "../components/TaskProgress";
 import UserStore from "../store/userStore";
+import RoadMapStore from "../store/RoadMapStore";
 
 
 export default function RoadMap({roadmap , updateRoadMap , updateComppleteStatus}) {
-  // const [ isLoading , setIsLoading] = useState(true);
-
-
-  // const [roadmap, setRoadmap] = useState({});
-
-  // useEffect(()=>{
-
-  // }, [])
   const user = UserStore();
-
+  const roadMapStore = RoadMapStore()
 
   useEffect(() => {
     if (roadmap && roadmap.weeks) {
@@ -30,9 +23,9 @@ export default function RoadMap({roadmap , updateRoadMap , updateComppleteStatus
       );
   
       const val = calculateCompletionPercentage(totalTasks);
-      updateComppleteStatus(val); // ✅ Now updates after render
+      updateComppleteStatus(val); 
     }
-  }, [roadmap]); // ✅ Runs after roadmap updates
+  }, [roadmap]); 
   
   
   const handleCheckboxChange = (weekIndex, dayIndex, taskIndex) => {
@@ -66,6 +59,7 @@ export default function RoadMap({roadmap , updateRoadMap , updateComppleteStatus
     };
 
     updateRoadMap(newRoadmap ); // Update the state with the modified roadmap
+    roadMapStore.setRoadMap(newRoadmap);
   };
 
   const calculateCompletionPercentage = (items) => {
